@@ -2,7 +2,6 @@ package com.example.coderHack.service;
 
 import com.example.coderHack.model.User;
 import com.example.coderHack.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
