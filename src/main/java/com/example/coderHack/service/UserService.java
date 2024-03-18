@@ -24,8 +24,8 @@ public class UserService {
         return userRepository.findByUserId(userId);
     }
 
-    public void registerUser(User user) {
-        userRepository.save(user);
+    public User registerUser(User user) {
+        return userRepository.save(user);
     }
 
     public Optional<User> updateScore(String userId) {

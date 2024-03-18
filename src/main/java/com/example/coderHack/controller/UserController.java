@@ -16,16 +16,18 @@ import java.util.stream.Collectors;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/users")
-class UserController {
+public class UserController {
 
     private UserService userService;
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers()
-                .stream()
-                .sorted(Comparator.comparing(User::getScore))
-                .collect(Collectors.toList());
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        if (users.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(users, HttpStatus.OK);
+        }
     }
 
     @GetMapping("/{userId}")
@@ -48,10 +50,10 @@ class UserController {
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<String> updateScore(@PathVariable String userId, @RequestParam int score) {
+    public ResponseEntity<User> updateScore(@PathVariable String userId, @RequestParam int score) {
         Optional<User> userOptional = userService.updateScore(userId);
         if(score < 0 || score > 100){
-            return new ResponseEntity<>("Please enter a valid score", HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity<>(null, HttpStatus.NOT_ACCEPTABLE);
         }
 
         if (userOptional.isPresent()) {
@@ -59,7 +61,7 @@ class UserController {
             user.setScore(score);
             updateBadges(user);
             userService.registerUser(user);
-            return new ResponseEntity<>("User Score Updated Successfully!", HttpStatus.OK);
+            return new ResponseEntity<>(user, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -75,6 +77,7 @@ class UserController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
 
     @DeleteMapping
     public void deleteAllUsers(){
